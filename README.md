@@ -17,7 +17,7 @@ ROS2 nodes for LLM, VLM, VLA
 
 ## Usage
 
-```rros2 launch ros2_nanollm camera_input_example.launch.py model:=<path-to-model> api:=<model-backend> quantization:=<method>```
+```ros2 launch ros2_nanollm camera_input_example.launch.py model:=<path-to-model> api:=<model-backend> quantization:=<method>```
 
 ## ROS Parameters
 
