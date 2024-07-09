@@ -10,7 +10,7 @@ ROS2 nodes for LLM, VLM, VLA
 2. Ensure that Docker is installed by following the instructions [here](https://docs.docker.com/engine/install/).
 3. Install the NanoLLM Docker Container by following the installation instructions [here](https://dusty-nv.github.io/NanoLLM/install.html).
 4. Clone the required project under ```${ros2_ws}/src```
-5. Mount your cloned ROS 2 workspace to the installed container:
-6. ```
+   
+   ```
    jetson-containers run -v ~/ros2_ws:/root/ros2_ws dustynv/ros:humble-llm-r36.3.0
    ```
