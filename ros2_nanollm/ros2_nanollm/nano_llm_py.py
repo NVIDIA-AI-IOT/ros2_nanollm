@@ -13,8 +13,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import rclpy #this imports the main rclpy package, which is the ROS 2 client library for Python. rclpy provides the Python bindings for the ROS 2 
-                #middleware, allowing you to create ROS 2 nodes, publish and subscribe to topics, and interact with the ROS 2 system.
+import rclpy 
 from rclpy.node import Node
 from std_msgs.msg import String
 from sensor_msgs.msg import Image
@@ -52,9 +51,7 @@ class Nano_LLM_Subscriber(Node):
 
         # To convert ROS image message to OpenCV image
         self.cv_br = CvBridge() 
-        
-        
-
+      
         #load the model 
         self.model = NanoLLM.from_pretrained("Efficient-Large-Model/Llama-3-VILA1.5-8B")
 
@@ -71,20 +68,11 @@ class Nano_LLM_Subscriber(Node):
 
 
     def image_listener_callback(self, data): 
-        input_query = self.query
-        #input_model = self.get_parameter('model').get_parameter_value().string_value
-        
+        input_query = self.query        
        
         # call model with input_query and input_image 
         cv_img = self.cv_br.imgmsg_to_cv2(data, 'rgb8')
         PIL_img = im.fromarray(cv_img)
-        #image_np = np.array(msg.data, dtype=np.uint8).reshape((msg.height, msg.width, 3))
-        #load the model 
-        #model = NanoLLM.from_pretrained(input_model)
-
-        #search to see if you can even do this
-        #embedding = self.model.embed_image(PIL_img, return_tensors='np', return_dict=False)
-
 
         # Parsing input text prompt
         prompt = input_query.strip("][()")
@@ -96,19 +84,10 @@ class Nano_LLM_Subscriber(Node):
         self.chat_history.append('user', image=PIL_img)
         self.chat_history.append('user', prompt, use_cache=True)
         embedding, _ = self.chat_history.embed_chat()
-
-        #text_token = self.model.embed_text(prompt, return_tensors = 'np')
-
-#        input = {
- #           'image': embedding,
-  #          'text': text_token
-   #     }
-        
-        #check with asawaree
+      
         output = self.model.generate(
             inputs=embedding,
             kv_cache=self.chat_history.kv_cache,
-#            prompt = prompt,
             min_new_tokens = 10,
             streaming = False, 
             do_sample = True,
@@ -141,11 +120,3 @@ def main(args=None):
 if __name__ == '__main__':
     main()
 
-
-#use print statements to understand dusty code example
-#install cam2image node 
-#use the launch file as a template 
-
-#launch
-#change nanoowl_node to nanollm in cam launch -- launch arg specific to nanollm 
-#dont need nano_owl_example.launch -- used for noncamera images like rosbag
