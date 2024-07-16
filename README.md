@@ -6,18 +6,39 @@ ROS2 nodes for LLM, VLM, VLA
 
 ## Setup 
 
-1. Set up your ROS development environment by following the instructions [here](https://docs.ros.org/en/humble/Installation.html).
-2. Ensure that Docker is installed by following the instructions [here](https://docs.docker.com/engine/install/).
+1. Run through these [setup steps](https://github.com/dusty-nv/jetson-containers/blob/master/docs/setup.md) to get your Docker engine configured.
+2. Set up your ROS development environment by following the instructions [here](https://docs.ros.org/en/humble/Installation.html).
 3. Install the NanoLLM Docker Container by following the installation instructions [here](https://dusty-nv.github.io/NanoLLM/install.html).
-4. Clone the required project under ```${ros2_ws}/src```
-   
-   ```
-   jetson-containers run -v ~/ros2_ws:/root/ros2_ws dustynv/ros:humble-llm-r36.3.0
-   ```
+
+### Dev Mode
+
+By default, the `ros2_nanollm` package is built into the container and installed under `/ros2_workspace` (which is an environment automatically sourced on container startup).  But if you would like to edit this package interactively, you can do so by cloning it to an external workspace on your host device, and then mounting that workspace overlaid on the original location)
+
+```
+# make a ROS workspace somewhere outside container, and clone ros2_nanollm
+mkdir -p ~/ros2_workspace/src
+cd ~/ros2_workspace/src
+git clone https://github.com/NVIDIA-AI-IOT/ros2_nanollm
+
+# start nano_llm:humble container, mounting in your own workspace
+jetson-containers run -v ~/ros2_workspace:/ros2_workspace $(autotag nano_llm:humble)
+
+# build the mounted workspace (this is running inside container at this point)
+cd /ros2_workspace
+colcon build --symlink-install --base-paths src
+bash /ros2_workspace/install/setup.bash
+
+# check that the nodes are still there
+ros2 pkg list | grep ros2_nanollm
+ros2 pkg executables ros2_nanollm
 
 ## Usage
 
-```ros2 launch ros2_nanollm camera_input_example.launch.py model:=<path-to-model> api:=<model-backend> quantization:=<method>```
+```
+jetson-containers run $(autotag nano_llm:humble) /
+    ros2 launch ros2_nanollm camera_input_example.launch.py /
+        model:=<path-to-model> api:=<model-backend> quantization:=<method>
+```
 
 ## ROS Parameters
 
