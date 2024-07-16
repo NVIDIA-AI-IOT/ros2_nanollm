@@ -31,6 +31,7 @@ bash /ros2_workspace/install/setup.bash
 # check that the nodes are still there
 ros2 pkg list | grep ros2_nanollm
 ros2 pkg executables ros2_nanollm
+```
 
 ## Usage
 
