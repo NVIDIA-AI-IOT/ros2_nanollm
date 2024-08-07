@@ -3,6 +3,10 @@ ROS2 nodes for LLM, VLM, VLA
 
 [NanoLLM](https://github.com/dusty-nv/NanoLLM/tree/main) optimizes many different models to run on the NVIDIA Jetson Orin. This project provides a ROS 2 package for scene description using NanoLLM. 
 
+<p align="center">
+  <img src="assets/sample.gif" width="45%">
+</p>
+
 
 ## Setup 
 
