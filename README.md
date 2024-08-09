@@ -16,7 +16,7 @@ ROS2 nodes for LLM, VLM, VLA
 
 ### Dev Mode
 
-By default, the `ros2_nanollm` package is built into the container and installed under `/ros2_workspace` (which is an environment automatically sourced on container startup).  But if you would like to edit this package interactively, you can do so by cloning it to an external workspace on your host device, and then mounting that workspace overlaid on the original location)
+By default, the `ros2_nanollm` package is built into the container and installed under `/ros2_workspace` (which is an environment automatically sourced on container startup).  But if you would like to edit this package interactively, you can do so by cloning it to an external workspace on your host device, and then mounting that workspace overlaid on the original location.
 
 ```
 # make a ROS workspace somewhere outside container, and clone ros2_nanollm
