@@ -27,9 +27,10 @@ setup(
         ('share/ament_index/resource_index/packages',
             ['resource/' + package_name]),
         ('share/' + package_name, ['package.xml']),
-	('share/' + package_name, glob('launch/*.launch.py')),
+	    ('share/' + package_name, glob('launch/*.launch.py')),
+        ('share/' + package_name + '/configs', glob('configs/*.yaml')),
     ],
-    install_requires=['setuptools'],
+    install_requires=['setuptools', 'nanollm_interfaces'],
     zip_safe=True,
     maintainer='kshaltiel',
     maintainer_email='kshaltiel@nvidia.com',
@@ -38,7 +39,13 @@ setup(
     tests_require=['pytest'],
     entry_points={
         'console_scripts': [
-		'nano_llm_py = ros2_nanollm.nano_llm_py:main'
+		'nano_llm_py = ros2_nanollm.nano_llm_py:main',
+        'offline_llm_video_description_py = ros2_nanollm.offline_llm_video_description_py:main',
+        'rosbag_nano_llm_py = ros2_nanollm.rosbag_nano_llm_py:main',
+        'rosbag_image_caption_scorer = ros2_nanollm.rosbag_image_caption_scorer:main',
+        'ground_truth_label_collector = ros2_nanollm.ground_truth_label_collector:main',
+        # 'image_saver = image_saver.image_saver:main',
         ],
     },
+    
 )

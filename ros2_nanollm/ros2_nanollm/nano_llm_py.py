@@ -16,11 +16,13 @@
 import rclpy 
 from rclpy.node import Node
 from std_msgs.msg import String
+from nanollm_interfaces.msg import StringStamped
 from sensor_msgs.msg import Image
 from cv_bridge import CvBridge
 from PIL import Image as im
 from nano_llm import NanoLLM, ChatHistory
 import numpy as np
+from rclpy.qos import QoSProfile, QoSReliabilityPolicy, QoSDurabilityPolicy
  
 
 class Nano_LLM_Subscriber(Node):
@@ -29,10 +31,12 @@ class Nano_LLM_Subscriber(Node):
         super().__init__('nano_llm_subscriber')
         
         #EDIT MODEL HERE 
-        self.declare_parameter('model', "Efficient-Large-Model/Llama-3-VILA1.5-8B") #inserting vila
+        self.declare_parameter('model', "Efficient-Large-Model/VILA1.5-3b") #inserting vila
         self.declare_parameter('api', "mlc")
         self.declare_parameter('quantization', "q4f16_ft")
-      
+
+        self.model_name = self.get_parameter('model').get_parameter_value().string_value
+
         # Subscriber for input query
         self.query_subscription = self.create_subscription(
             String,
@@ -53,24 +57,28 @@ class Nano_LLM_Subscriber(Node):
         self.cv_br = CvBridge() 
       
         #load the model 
-        self.model = NanoLLM.from_pretrained("Efficient-Large-Model/Llama-3-VILA1.5-8B")
+        self.get_logger().info(f"load model: {self.model_name}")
+        self.model = NanoLLM.from_pretrained(self.model_name)
 
         #chatHistory var 
         self.chat_history = ChatHistory(self.model)
 
         ##  PUBLISHER
-        self.output_publisher = self.create_publisher(String, 'output', 10)
+
+        self.output_publisher = self.create_publisher(StringStamped, '/output', 10)
         self.query = "Describe the image."
 
     def query_listener_callback(self, msg):
         #can change with user needs 
+        self.get_logger().info(f"query_listener_callback: {msg.data}") # debug
         self.query = msg.data
 
 
     def image_listener_callback(self, data): 
         input_query = self.query        
-       
+        self.get_logger().info(f"image_listener_callback") # debug
         # call model with input_query and input_image 
+        stamp = data.header.stamp
         cv_img = self.cv_br.imgmsg_to_cv2(data, 'rgb8')
         PIL_img = im.fromarray(cv_img)
 
@@ -94,9 +102,12 @@ class Nano_LLM_Subscriber(Node):
         )
 
         #FIX PUBLISHER 
-        output_msg = String()
+        # output_msg = String()
+        output_msg = StringStamped()
+        output_msg.header.stamp = stamp
         output_msg.data = output
         self.output_publisher.publish(output_msg)
+        self.get_logger().info(f"output: {output_msg}")
         self.get_logger().info(f"Published output: {output}")
 
         self.chat_history.reset()
@@ -105,7 +116,6 @@ class Nano_LLM_Subscriber(Node):
 
 def main(args=None):
     rclpy.init(args=args)
-
     nano_llm_subscriber = Nano_LLM_Subscriber()
 
     rclpy.spin(nano_llm_subscriber)

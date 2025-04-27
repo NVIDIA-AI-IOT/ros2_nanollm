@@ -1,0 +1,5 @@
+labels:
+  '1': { name: "Public", value: 1 }
+  '2': { name: "Private", value: -1 }
+  'a': { name: "TEST LABEL1", value: 100}
+  'b': { name: "TEST LABEL2", value: 200}

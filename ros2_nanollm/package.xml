@@ -20,6 +20,7 @@
   <exec_depend>opencv2</exec_depend>
   <exec_depend>cv_bridge</exec_depend>
 
+  <depend>nanollm_interfaces</depend>
 
   <export>
     <build_type>ament_python</build_type>

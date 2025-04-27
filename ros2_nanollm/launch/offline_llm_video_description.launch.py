@@ -28,6 +28,14 @@ def generate_launch_description():
             'quantization',
             default_value='q4f16_ft',
             description='The quantization method to use'),
+        DeclareLaunchArgument(
+            'video_path',
+            default_value='/ros2_workspace/vlm_sample_videos/PXL_20250304_071458198.mp4',
+            description='Input video file path to process'),
+        DeclareLaunchArgument(
+            'query',
+            default_value='Describe the image.',
+            description='The query to hand over to LLM'),
     ]
 
     # NanoOWL parameters
@@ -38,27 +46,23 @@ def generate_launch_description():
     model = LaunchConfiguration('model')
     api = LaunchConfiguration('api')
     quantization = LaunchConfiguration('quantization')
-    cam2image_node = Node(
-            package='image_tools',
-            executable='cam2image',
-            parameters=[{
-                    'device_id': 0, # /dev/video0
-                }],
-            remappings=[('image', 'input_image')],
-            arguments=['--ros-args', '--log-level', 'WARN'],
-    )
+    video_path = LaunchConfiguration('video_path')
+    query = LaunchConfiguration('query')
 
     nanollm_node = Node(
             package='ros2_nanollm', #make sure package is named this
-            executable='nano_llm_py',
+            executable='offline_llm_video_description_py',
             parameters=[{
                 'model': 'Efficient-Large-Model/VILA1.5-3b',
+                # 'model': 'Efficient-Large-Model/VILA1.5-13b',
                 'api': api, #'mlc',
                 'quantization': quantization, #'q4f16_ft',
+                'video_path': video_path,
+                'query': query,
             }]
     )
     
-    final_launch_description = launch_args + [cam2image_node] + [nanollm_node]
-    # final_launch_description = launch_args + [nanollm_node]
+    # final_launch_description = launch_args + [cam2image_node] + [nanollm_node]
+    final_launch_description = launch_args + [nanollm_node]
     
     return LaunchDescription(final_launch_description)
